@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.driveapp.driverater.MainActivity;
@@ -18,15 +19,23 @@ public class DashboardFragment extends Fragment {
     private FragmentDashboardBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-        dashboardViewModel.SetText(Integer.toString(MainActivity.GetScore()));
-
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        // Prepare text fields
         final TextView textScore = binding.textDashboardScore;
+        final TextView textName = binding.textDashboardName;
 
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textScore::setText);
+        // Set score
+        MutableLiveData<String> score = new MutableLiveData<>();
+        score.setValue(Integer.toString(MainActivity.GetScore()));
+        score.observe(getViewLifecycleOwner(), textScore::setText);
+
+        // Set name
+        MutableLiveData<String> name = new MutableLiveData<>();
+        name.setValue("Hello, " + MainActivity.GetFirstname() + ".");
+        name.observe(getViewLifecycleOwner(), textName::setText);
+
         return root;
     }
 
