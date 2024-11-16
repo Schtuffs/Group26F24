@@ -1,9 +1,12 @@
 package com.driveapp.driverater;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.driveapp.driverater.logic.User;
+import com.driveapp.driverater.ui.login.Login;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +19,7 @@ import com.driveapp.driverater.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
     private static User user;
+    public Button but;
 
     private ActivityMainBinding binding;
 
@@ -38,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        but = findViewById(R.id.button2);
+
+        but.setOnClickListener(v -> {
+            Intent i = new Intent(MainActivity.this, Login.class);
+            startActivity(i);
+        });
     }
 
     public static int GetScore() {
