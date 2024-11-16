@@ -10,22 +10,23 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.driveapp.driverater.MainActivity;
 import com.driveapp.driverater.databinding.FragmentDashboardBinding;
 
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        com.driveapp.driverater.ui.dashboard.DashboardViewModel dashboardViewModel =
-                new ViewModelProvider(this).get(com.driveapp.driverater.ui.dashboard.DashboardViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        dashboardViewModel.SetText(Integer.toString(MainActivity.GetScore()));
 
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textScore = binding.textDashboardScore;
+
+        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textScore::setText);
         return root;
     }
 

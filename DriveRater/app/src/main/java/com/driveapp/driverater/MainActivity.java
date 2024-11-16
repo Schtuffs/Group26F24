@@ -1,7 +1,9 @@
 package com.driveapp.driverater;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import com.driveapp.driverater.logic.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,11 +15,15 @@ import androidx.navigation.ui.NavigationUI;
 import com.driveapp.driverater.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
+    private static User user;
 
     private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Create the user
+        user = new User("NameFirst", "NameLast");
+
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -34,4 +40,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
+    public static int GetScore() {
+        return user.GetScore();
+    }
+
+    public static String GetFirstname() {
+        return user.GetFirst();
+    }
 }
