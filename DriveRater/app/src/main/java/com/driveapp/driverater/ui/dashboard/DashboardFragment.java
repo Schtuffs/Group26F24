@@ -8,24 +8,34 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.driveapp.driverater.MainActivity;
 import com.driveapp.driverater.databinding.FragmentDashboardBinding;
 
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        com.driveapp.driverater.ui.dashboard.DashboardViewModel dashboardViewModel =
-                new ViewModelProvider(this).get(com.driveapp.driverater.ui.dashboard.DashboardViewModel.class);
-
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        // Prepare text fields
+        final TextView textScore = binding.textDashboardScore;
+        final TextView textName = binding.textDashboardName;
+
+        // Set score
+        MutableLiveData<String> score = new MutableLiveData<>();
+        score.setValue(Integer.toString(MainActivity.GetScore()));
+        score.observe(getViewLifecycleOwner(), textScore::setText);
+
+        // Set name
+        MutableLiveData<String> name = new MutableLiveData<>();
+        name.setValue("Hello, " + MainActivity.GetFirstname() + ".");
+        name.observe(getViewLifecycleOwner(), textName::setText);
+
         return root;
     }
 
