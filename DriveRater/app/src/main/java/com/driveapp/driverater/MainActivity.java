@@ -1,7 +1,10 @@
 package com.driveapp.driverater;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.driveapp.driverater.logic.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -16,6 +19,7 @@ import com.driveapp.driverater.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
     private static User user;
+    public Button but;
 
     private ActivityMainBinding binding;
 
@@ -38,6 +42,38 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        but = findViewById(R.id.loginButton);
+
+        but.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Log.i("Login Button", "login button clicked");
+
+                startActivity(new Intent(MainActivity.this, Login.class ) );
+            }
+        });
+
+       // but.setOnClickListener(v -> {
+         //   Intent i = new Intent(MainActivity.this, Login.class);
+           // startActivity(i);
+      //  });
+
+        //Find Registry button
+        Button rgbtn = findViewById(R.id.registerButton);
+
+        //Set registry button behavior
+        rgbtn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Log.i("Registry Button", "registry button clicked");
+
+                startActivity(new Intent(MainActivity.this, register.class ) );
+            }
+        });
+
     }
 
     public static int GetScore() {
