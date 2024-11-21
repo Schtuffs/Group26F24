@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.driveapp.driverater.logic.Trip;
 import com.driveapp.driverater.logic.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -74,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button startTripBtn = findViewById(R.id.startTripButton);
+        startTripBtn.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, Trip.class));
+        });
     }
 
     public static int GetScore() {
