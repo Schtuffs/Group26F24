@@ -22,7 +22,7 @@ public class DriveScore {
         this.allTrips.add(trip);
 
         // Updates the driver score
-        int scoreUpdate = trip.foo();
+        int scoreUpdate = 0;
         // Update value with diminishing returns so that all trips are weighted fairly equally
         // This method of calculating will be changed in the future
         this.driverScoreValue += scoreUpdate / this.allTrips.size();
