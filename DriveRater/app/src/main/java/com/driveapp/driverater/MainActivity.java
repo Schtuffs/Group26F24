@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         but = findViewById(R.id.loginButton);
 
-        but.setOnClickListener(new View.OnClickListener(){
+        but.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Change activity to the trip screen
         Button startTripBtn = findViewById(R.id.startTripButton);
         startTripBtn.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, Trip.class));

@@ -8,19 +8,23 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.driveapp.driverater.R;
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 
 public class Trip extends AppCompatActivity {
+    private final int CODE_REQUEST_LOCATION = 1;
+
     // For storing the speed limit and the users speed
     private class SpeedStorage {
         int userSpeed, speedLimit;
@@ -52,25 +56,20 @@ public class Trip extends AppCompatActivity {
         public void run() {
             try {
                 CurrentLocationRequest req = new CurrentLocationRequest.Builder().setGranularity(Granularity.GRANULARITY_FINE).setPriority(Priority.PRIORITY_HIGH_ACCURACY).build();
-                if (ActivityCompat.checkSelfPermission(Trip.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Trip.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                if (ActivityCompat.checkSelfPermission(Trip.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(Trip.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Log.e("Location Tracking", "No location permissions");
                     return;
                 }
-                Trip.this.fusedLocationClient.getCurrentLocation(req, null).addOnSuccessListener(Trip.this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            Log.v("Granularity", "Gran: " + req.getGranularity());
-                            Log.v("Trip", ("Long: " + location.getLongitude() + ", Lat: " + location.getLatitude()));
-                            Trip.this.add(location);
-                        }
+
+                Trip.this.fusedLocationClient.getCurrentLocation(req, null).addOnSuccessListener(Trip.this, location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        Log.d("Trip", ("Long: " + location.getLongitude() + ", Lat: " + location.getLatitude()));
+                        Trip.this.add(location);
+                    }
+                    else {
+                        Log.e("Location Tracking", "Location was NULL");
                     }
                 });
             } finally {
@@ -87,15 +86,47 @@ public class Trip extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Request permissions if permissions not already granted
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    CODE_REQUEST_LOCATION);
+        }
+
+        // Change view to the view screen
+        setContentView(R.layout.fragment_trip);
+
         this.speedsAndLimits = new ArrayList<>();
-        this.mHandler = new Handler(Looper.getMainLooper());
-        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mStatusChecker.run();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         this.mHandler.removeCallbacks(mStatusChecker);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // Once user selects an option
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CODE_REQUEST_LOCATION) {
+            // If request is cancelled, the result arrays are empty
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("Location Request", "Permissions granted");
+                this.mHandler = new Handler(Looper.getMainLooper());
+                this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+                mStatusChecker.run();
+            } else {
+                Log.e("Location Request", "Permissions denied");
+            }
+        }
+    }
+
+    public String GetRecentLocation() {
+        return ("Long: " + (this.speedsAndLimits.get(this.speedsAndLimits.size() - 1).userSpeed) + ", Lat: " + (this.speedsAndLimits.get(this.speedsAndLimits.size() - 1).speedLimit));
     }
 }
