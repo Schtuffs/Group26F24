@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class Login extends AppCompatActivity {
 
+
     private EditText editTextUsername, editTextPassword;
     private Button buttonLogin;
 
@@ -23,6 +24,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -43,6 +45,7 @@ public class Login extends AppCompatActivity {
                 // Retrieve entered username and password
                 String username = editTextUsername.getText().toString();
                 String password = editTextPassword.getText().toString();
+
 
                 // Implement authentication logic here
                 if (username.equals("Admin") && password.equals("123")) {
