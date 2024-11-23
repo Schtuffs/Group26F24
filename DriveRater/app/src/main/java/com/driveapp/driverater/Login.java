@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class Login extends AppCompatActivity {
 
-
+    //Variables needed to track the text in any entry fields, as well as the login button itself
     private EditText editTextUsername, editTextPassword;
     private Button buttonLogin;
 
@@ -39,23 +39,28 @@ public class Login extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
 
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
+        buttonLogin.setOnClickListener(new View.OnClickListener() {//When login button is clicked
             @Override
             public void onClick(View view) {
-                // Retrieve entered username and password
-                String username = editTextUsername.getText().toString();
+
+                // Retrieve entered username and password (trimming username of spaces)
+                String user = editTextUsername.getText().toString();
+                String username = user.trim();
                 String password = editTextPassword.getText().toString();
 
+                //Declare a DatabaseHelper class variable (provides many functions that operate on a database)
+                DatabaseHelper db = new DatabaseHelper(Login.this);
 
-                // Implement authentication logic here
-                if (username.equals("Admin") && password.equals("123")) {
+                //Check that the username and password exist within the system
+                boolean check = db.checkLoginData(username, password);
+
+                if (check) {
                     // Successful login
                     Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
                 } else {
                     // Failed login
                     Toast.makeText(Login.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
     }
