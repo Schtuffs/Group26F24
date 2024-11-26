@@ -1,13 +1,17 @@
 package com.driveapp.driverater.logic;
 
+import static android.location.provider.ProviderProperties.ACCURACY_FINE;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.MutableLiveData;
 
 import com.driveapp.driverater.MainActivity;
 import com.driveapp.driverater.R;
@@ -59,16 +64,39 @@ public class Trip extends AppCompatActivity {
 
     private Runnable mDriveDataGetter;
 
-    private void add(int uSpeed, int lSpeed) {
-        SpeedStorage s = new SpeedStorage(uSpeed, lSpeed);
-        this.speedsAndLimits.add(s);
+    private void add(Location loc) {
+        // Return if the location does not have a speed
+        if (!loc.hasSpeed()) {
+            return;
+        }
+        // Adding the user speed
+        int userSpeed = (int)loc.getSpeed();
+
+        // Check if the location is confident with the accuracy of the speed
+        if (loc.hasSpeedAccuracy()) {
+            // If the speed is lower than the potential accuracy, then the user is most likely not moving
+            if (userSpeed < loc.getSpeedAccuracyMetersPerSecond()) {
+                userSpeed = 0;
+            }
+        }
+        // Convert to KM/H
+        userSpeed *= 3.6;
+
+        String tex = ("Latitude: " + loc.getLatitude() + ", Longitude: " + loc.getLongitude() + ", Speed: " + userSpeed);
+        Trip.this.displayText.setText(tex);
+
+        // Speed limit
+        // Will most likely use Google Maps API
+        int limitSpeed = 0;
+
+        // Adding new location data
+        this.speedsAndLimits.add(new SpeedStorage(userSpeed, limitSpeed));
     }
+
+    private TextView displayText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Fragment fragment = new TripFragment();
-        setContentView(R.layout.fragment_trip);
-
         super.onCreate(savedInstanceState);
 
         binding = FragmentTripBinding.inflate(getLayoutInflater());
@@ -96,6 +124,13 @@ public class Trip extends AppCompatActivity {
             Intent i = new Intent(Trip.this, MainActivity.class);
             v.getContext().startActivity(i);
         });
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        TripFragment fragment = new TripFragment();
+        transaction.add(fragment, null);
+        transaction.commitNow();
+
+        this.displayText = findViewById(R.id.locationText);
     }
 
     @Override
@@ -149,7 +184,7 @@ public class Trip extends AppCompatActivity {
 
         this.mDriveDataGetter = new Runnable() {
             private final int mInterval = 1000;
-            private final CurrentLocationRequest req = new CurrentLocationRequest.Builder().setGranularity(Granularity.GRANULARITY_FINE).setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY).build();
+            private final CurrentLocationRequest req = new CurrentLocationRequest.Builder().setGranularity(Granularity.GRANULARITY_FINE).setPriority(Priority.PRIORITY_HIGH_ACCURACY).build();
 
             @Override
             public void run() {
@@ -160,12 +195,11 @@ public class Trip extends AppCompatActivity {
                     }
 
                     // Logs an error, can be ignored
-                    Trip.this.fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener(Trip.this, location -> {
+                    Trip.this.fusedLocationClient.getCurrentLocation(req, null).addOnSuccessListener(Trip.this, location -> {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
-                            Log.d("Trip", ("Latitude: " + location.getLatitude() + ", Longitude: " + location.getLongitude()));
-                            String tex = ("Latitude: " + location.getLatitude() + ", Longitude: " + location.getLongitude());
-//                            Trip.this.locationText.setText(tex);
+                            Log.d("Trip", ("Accuracy: " + (location.getAccuracy()) + ", Speed: " + location.getSpeed()));
+                            Trip.this.add(location);
                         }
                         else {
                             Log.e("Location Tracking", "Location was NULL");
@@ -183,6 +217,9 @@ public class Trip extends AppCompatActivity {
 
     public String GetLocation() {
         int size = this.speedsAndLimits.size() - 1;
+        if (size < 0) {
+            return "Size: " + size;
+        }
         return ("Speed: " + this.speedsAndLimits.get(size) + ", Lat: " + this.speedsAndLimits.get(size).UserSpeed() + ", Long: " + this.speedsAndLimits.get(size).SpeedLimit());
     }
 }
