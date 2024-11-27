@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
+
+        //Code for changing scenes
+
+        //Find Login button
         but = findViewById(R.id.loginButton);
         but.setOnClickListener(new View.OnClickListener() {
 
@@ -56,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         //Find Registry button
         Button rgbtn = findViewById(R.id.registerButton);
 
-        //Set registry button behavior
+        //When Register button is clicked
         rgbtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Change activity to the trip screen
         Button startTripBtn = findViewById(R.id.startTripButton);
+
+        //When Start Trip button is clicked
         startTripBtn.setOnClickListener(v -> {
             Intent i = new Intent(v.getContext(), Trip.class);
             v.getContext().startActivity(i);
