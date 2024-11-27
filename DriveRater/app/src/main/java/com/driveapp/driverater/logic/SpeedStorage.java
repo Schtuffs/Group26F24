@@ -1,9 +1,13 @@
 package com.driveapp.driverater.logic;
 
 import android.location.Location;
+import android.util.Log;
 
 // For storing the speed limit and the users speed
 public class SpeedStorage {
+    // Stores minimum allowed speed/acceleration before defaulting to 0
+    private final double minSpeed = 1., minAcceleration = 1.;
+
     // Both stored in KM/H
     private int mSpeedLimit;
     private double mUserSpeed, mAcceleration;
@@ -16,6 +20,10 @@ public class SpeedStorage {
 
         // Return if the location does not have a speed
         if (!loc.hasSpeed()) {
+            this.mUserSpeed = 0;
+            this.mAcceleration = 0;
+            this.mSpeedLimit = 0;
+            this.mLocation = loc;
             return;
         }
         // Adding the user speed
@@ -23,8 +31,8 @@ public class SpeedStorage {
 
         // Check if the location is confident with the accuracy of the speed
         if (loc.hasSpeedAccuracy()) {
-            // If the speed is lower than the potential accuracy, then the user is most likely not moving
-            if (userSpeed < loc.getSpeedAccuracyMetersPerSecond()) {
+            // If the speed is lower than 1 m/s, then they are most likely not moving
+            if (userSpeed < this.minSpeed) {
                 userSpeed = 0;
             }
         }
@@ -37,7 +45,17 @@ public class SpeedStorage {
 
         // Calculating acceleration
         if (previous != null) {
-            this.mAcceleration = (previous.UserSpeed() - loc.getSpeed() ) / Trip.Interval;
+            try {
+                this.mAcceleration = (userSpeed - previous.mUserSpeed) / Trip.AddInterval();
+                Log.v("Constructor", "Prev: " + previous.mUserSpeed + ", Current: " + userSpeed + ", Accel: " + this.mAcceleration);
+            } catch (ArithmeticException e) {
+                Log.d("SpeedStorageConstructor", "SpeedStorage: Cannot divide by 0");
+                this.mAcceleration = 0;
+            }
+            // Default the min acceleration if too slow
+            if (this.mAcceleration < this.minAcceleration) {
+                this.mAcceleration = 0;
+            }
         }
         else {
             this.mAcceleration = 0;
@@ -48,18 +66,18 @@ public class SpeedStorage {
         this.mSpeedLimit = limitSpeed;
     }
 
-    public int UserSpeed() {
+    public double UserSpeed() {
         // Downcast to int for display purposes
-        return (int)this.mUserSpeed;
+        return this.mUserSpeed;
     }
 
-    public int SpeedLimit() {
+    public double SpeedLimit() {
         // Downcast to int for display purposes
-        return (int)this.mSpeedLimit;
+        return this.mSpeedLimit;
     }
 
-    public int Acceleration() {
+    public double Acceleration() {
         // Downcast to int for display purposes
-        return (int)this.mAcceleration;
+        return this.mAcceleration;
     }
 }

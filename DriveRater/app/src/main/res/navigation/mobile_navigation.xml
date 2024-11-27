@@ -12,24 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_login"
-        android:name="com.driveapp.driverater.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-    <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.driveapp.driverater.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
-        <argument
-            android:name="h"
-            app:argType="integer"
-            android:defaultValue="5" />
-    <fragment
-        android:id="@+id/navigation_trip"
-        android:name="com.driveapp.driverater.ui.trip.TripFragment"
-        android:label="@string/title_trip"
-        tools:layout="@layout/fragment_trip"/>
 
     <fragment
         android:id="@+id/navigation_notifications"

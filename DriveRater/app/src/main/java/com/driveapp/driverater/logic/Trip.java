@@ -27,11 +27,13 @@ import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Trip extends AppCompatActivity {
     // For how much time is in between each lookup
-    public static final int Interval = 5000;
+    // Static so that if changed during runtime, it carries into the next trip
+    public static int mInterval = 1000, mAddInterval = 8;
 
     private FragmentTripBinding binding;
     private final int CODE_REQUEST_LOCATION = 1;
@@ -84,8 +86,6 @@ public class Trip extends AppCompatActivity {
         Button returnButton = findViewById(R.id.tripHomeButton);
         returnButton.setOnClickListener(v -> {
             this.finish();
-            Intent i = new Intent(Trip.this, MainActivity.class);
-            v.getContext().startActivity(i);
         });
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -146,6 +146,7 @@ public class Trip extends AppCompatActivity {
         }
 
         this.mDriveDataGetter = new Runnable() {
+            private int totalRuns = 0;
             private final CurrentLocationRequest req = new CurrentLocationRequest.Builder().setGranularity(Granularity.GRANULARITY_FINE).setPriority(Priority.PRIORITY_HIGH_ACCURACY).build();
 
             @Override
@@ -156,19 +157,23 @@ public class Trip extends AppCompatActivity {
                         return;
                     }
 
+                    this.totalRuns++;
+
                     // Logs an error, can be ignored
                     Trip.this.fusedLocationClient.getCurrentLocation(req, null).addOnSuccessListener(Trip.this, location -> {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
-                            Log.d("Trip", ("Accuracy: " + (location.getAccuracy()) + ", Speed: " + location.getSpeed()));
-                            Trip.this.add(location);
+                            if (totalRuns >= 8) {
+                                Trip.this.add(location);
+                                this.totalRuns = 0;
+                            }
                         }
                         else {
-                            Log.e("Location Tracking", "Location was NULL");
+                            Log.e("Location Tracking (Run)", "Location was NULL");
                         }
                     });
                 } finally {
-                    Trip.this.mHandler.postDelayed(Trip.this.mDriveDataGetter, Trip.Interval);
+                    Trip.this.mHandler.postDelayed(Trip.this.mDriveDataGetter, Trip.Interval());
                 }
             }
         };
@@ -177,11 +182,20 @@ public class Trip extends AppCompatActivity {
         this.mDriveDataGetter.run();
     }
 
+    public static int Interval() {
+        return mInterval;
+    }
+
+    public static int AddInterval() {
+        return mAddInterval;
+    }
+
     public String GetRecentSpeedData() {
         int size = this.speedsAndLimits.size() - 1;
         if (size < 0) {
             return "No data";
         }
-        return ("Speed: " + this.speedsAndLimits.get(size).UserSpeed() + "KM/H, Acceleration: " + this.speedsAndLimits.get(size).Acceleration() + "km/h^2");
+        DecimalFormat format = new DecimalFormat("#0.0");
+        return ("Speed: " + format.format(this.speedsAndLimits.get(size).UserSpeed()) + "KM/H, Acceleration: " + format.format(this.speedsAndLimits.get(size).Acceleration()) + "km/h^2");
     }
 }
