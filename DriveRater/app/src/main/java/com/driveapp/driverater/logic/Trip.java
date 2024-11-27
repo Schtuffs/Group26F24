@@ -1,7 +1,5 @@
 package com.driveapp.driverater.logic;
 
-import static android.location.provider.ProviderProperties.ACCURACY_FINE;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,10 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.MutableLiveData;
 
 import com.driveapp.driverater.MainActivity;
 import com.driveapp.driverater.R;
@@ -35,26 +30,11 @@ import com.google.android.gms.location.Priority;
 import java.util.ArrayList;
 
 public class Trip extends AppCompatActivity {
+    // For how much time is in between each lookup
+    public static final int Interval = 5000;
 
     private FragmentTripBinding binding;
     private final int CODE_REQUEST_LOCATION = 1;
-
-    // For storing the speed limit and the users speed
-    private class SpeedStorage {
-        int userSpeed, speedLimit;
-        public SpeedStorage(int uSpeed, int sLimit) {
-            this.userSpeed = uSpeed;
-            this.speedLimit = sLimit;
-        }
-
-        public int UserSpeed() {
-            return this.userSpeed;
-        }
-
-        public int SpeedLimit() {
-            return this.speedLimit;
-        }
-    }
 
     private ArrayList<SpeedStorage> speedsAndLimits;
     private FusedLocationProviderClient fusedLocationClient;
@@ -64,36 +44,19 @@ public class Trip extends AppCompatActivity {
 
     private Runnable mDriveDataGetter;
 
-    private void add(Location loc) {
-        // Return if the location does not have a speed
-        if (!loc.hasSpeed()) {
-            return;
-        }
-        // Adding the user speed
-        int userSpeed = (int)loc.getSpeed();
-
-        // Check if the location is confident with the accuracy of the speed
-        if (loc.hasSpeedAccuracy()) {
-            // If the speed is lower than the potential accuracy, then the user is most likely not moving
-            if (userSpeed < loc.getSpeedAccuracyMetersPerSecond()) {
-                userSpeed = 0;
-            }
-        }
-        // Convert to KM/H
-        userSpeed *= 3.6;
-
-        String tex = ("Latitude: " + loc.getLatitude() + ", Longitude: " + loc.getLongitude() + ", Speed: " + userSpeed);
-        Trip.this.displayText.setText(tex);
-
-        // Speed limit
-        // Will most likely use Google Maps API
-        int limitSpeed = 0;
-
-        // Adding new location data
-        this.speedsAndLimits.add(new SpeedStorage(userSpeed, limitSpeed));
-    }
-
     private TextView displayText;
+
+    private void add(Location loc) {
+        // Gets the most recently added speed object
+        int index = this.speedsAndLimits.size() - 1;
+        if (index >= 0) {
+            this.speedsAndLimits.add(new SpeedStorage(loc, this.speedsAndLimits.get(index)));
+        }
+        else {
+            this.speedsAndLimits.add(new SpeedStorage(loc, null));
+        }
+        this.displayText.setText(this.GetRecentSpeedData());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,7 +146,6 @@ public class Trip extends AppCompatActivity {
         }
 
         this.mDriveDataGetter = new Runnable() {
-            private final int mInterval = 1000;
             private final CurrentLocationRequest req = new CurrentLocationRequest.Builder().setGranularity(Granularity.GRANULARITY_FINE).setPriority(Priority.PRIORITY_HIGH_ACCURACY).build();
 
             @Override
@@ -206,7 +168,7 @@ public class Trip extends AppCompatActivity {
                         }
                     });
                 } finally {
-                    Trip.this.mHandler.postDelayed(Trip.this.mDriveDataGetter, this.mInterval);
+                    Trip.this.mHandler.postDelayed(Trip.this.mDriveDataGetter, Trip.Interval);
                 }
             }
         };
@@ -215,11 +177,11 @@ public class Trip extends AppCompatActivity {
         this.mDriveDataGetter.run();
     }
 
-    public String GetLocation() {
+    public String GetRecentSpeedData() {
         int size = this.speedsAndLimits.size() - 1;
         if (size < 0) {
-            return "Size: " + size;
+            return "No data";
         }
-        return ("Speed: " + this.speedsAndLimits.get(size) + ", Lat: " + this.speedsAndLimits.get(size).UserSpeed() + ", Long: " + this.speedsAndLimits.get(size).SpeedLimit());
+        return ("Speed: " + this.speedsAndLimits.get(size).UserSpeed() + "KM/H, Acceleration: " + this.speedsAndLimits.get(size).Acceleration() + "km/h^2");
     }
 }
