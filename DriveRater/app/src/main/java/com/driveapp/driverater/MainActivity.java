@@ -8,7 +8,6 @@ import android.widget.Button;
 
 import com.driveapp.driverater.logic.Trip;
 import com.driveapp.driverater.logic.User;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -17,6 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.driveapp.driverater.databinding.ActivityMainBinding;
+import com.driveapp.driverater.ui.trip.TripFragment;
 
 public class MainActivity extends AppCompatActivity {
     private static User user;
@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -49,14 +48,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Find Login button
         but = findViewById(R.id.loginButton);
-
-        //When Login is clicked
-        but.setOnClickListener(new View.OnClickListener(){
+        but.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 Log.i("Login Button", "login button clicked");
-
                 startActivity(new Intent(MainActivity.this, Login.class ) );
             }
         });
@@ -75,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Find Start Trip button
+        // Change activity to the trip screen
         Button startTripBtn = findViewById(R.id.startTripButton);
 
         //When Start Trip button is clicked
         startTripBtn.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, Trip.class));
+            Intent i = new Intent(v.getContext(), Trip.class);
+            v.getContext().startActivity(i);
+            setContentView(R.layout.fragment_trip);
         });
     }
 
