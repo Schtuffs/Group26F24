@@ -16,7 +16,7 @@ public class SpeedStorage {
         if (!loc.hasSpeed()) {
             this.mUserSpeed = 0;
             this.mAcceleration = 0;
-            this.mSpeedLimit = 0;
+            this.mSpeedLimit = 50;
             return;
         }
 
