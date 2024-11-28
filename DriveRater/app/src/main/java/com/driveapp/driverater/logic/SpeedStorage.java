@@ -6,7 +6,7 @@ import android.util.Log;
 // For storing the speed limit and the users speed
 public class SpeedStorage {
     // Stores minimum allowed speed/acceleration before defaulting to 0
-    private final double minSpeed = 1., minAcceleration = 1.;
+    private final double minSpeed = 1.0, minAcceleration = 0.1;
 
     // Both stored in KM/H
     private final int mSpeedLimit;
@@ -19,6 +19,7 @@ public class SpeedStorage {
             this.mSpeedLimit = 0;
             return;
         }
+
         // Adding the user speed
         double userSpeed = loc.getSpeed();
 
@@ -28,6 +29,9 @@ public class SpeedStorage {
             if (userSpeed < this.minSpeed) {
                 userSpeed = 0;
             }
+        }
+        else {
+            userSpeed = 0;
         }
         // Convert to KM/H
         userSpeed *= 3.6;
@@ -39,7 +43,7 @@ public class SpeedStorage {
         if (previous != null) {
             try {
                 // Convert to seconds
-                this.mAcceleration = (userSpeed - previous.mUserSpeed) / Trip.Interval() / 1000;
+                this.mAcceleration = (userSpeed - previous.mUserSpeed) / (Trip.Interval() / 1000.0);
             } catch (ArithmeticException e) {
                 Log.d("SpeedStorageConstructor", "SpeedStorage: Cannot divide by 0");
                 this.mAcceleration = 0;
