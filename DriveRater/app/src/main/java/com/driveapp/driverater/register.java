@@ -1,7 +1,6 @@
 package com.driveapp.driverater;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -102,7 +101,6 @@ public class register extends AppCompatActivity {
 
                     //Early implementation for checking that the user data was registered
                     Toast.makeText(register.this, "Registered: " + worked, Toast.LENGTH_SHORT).show();
-                    Log.d("TAG", "onClick: " + preferredName);
                 }
 
             }
