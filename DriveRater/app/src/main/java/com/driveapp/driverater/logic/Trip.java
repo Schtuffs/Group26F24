@@ -1,7 +1,6 @@
 package com.driveapp.driverater.logic;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 public class Trip extends AppCompatActivity {
     // For how much time is in between each lookup
     // Static so that if changed during runtime, it carries into the next trip
-    public static int mInterval = 1000, mAddInterval = 8;
+    private static int mInterval = 8000;
 
     private FragmentTripBinding binding;
     private final int CODE_REQUEST_LOCATION = 1;
@@ -85,6 +84,9 @@ public class Trip extends AppCompatActivity {
 
         Button returnButton = findViewById(R.id.tripHomeButton);
         returnButton.setOnClickListener(v -> {
+            this.mHandler.removeCallbacks(this.mDriveDataGetter);
+            Double[] calculatedScoreAdjustment = DriveScore.CalculateScore(this.speedsAndLimits);
+            MainActivity.UpdateScore(calculatedScoreAdjustment);
             this.finish();
         });
 
@@ -107,12 +109,6 @@ public class Trip extends AppCompatActivity {
         else {
             this.Run();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        this.mHandler.removeCallbacks(this.mDriveDataGetter);
-        super.onDestroy();
     }
 
     @Override
@@ -146,7 +142,6 @@ public class Trip extends AppCompatActivity {
         }
 
         this.mDriveDataGetter = new Runnable() {
-            private int totalRuns = 0;
             private final CurrentLocationRequest req = new CurrentLocationRequest.Builder().setGranularity(Granularity.GRANULARITY_FINE).setPriority(Priority.PRIORITY_HIGH_ACCURACY).build();
 
             @Override
@@ -157,16 +152,11 @@ public class Trip extends AppCompatActivity {
                         return;
                     }
 
-                    this.totalRuns++;
-
                     // Logs an error, can be ignored
                     Trip.this.fusedLocationClient.getCurrentLocation(req, null).addOnSuccessListener(Trip.this, location -> {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
-                            if (totalRuns >= 8) {
-                                Trip.this.add(location);
-                                this.totalRuns = 0;
-                            }
+                            Trip.this.add(location);
                         }
                         else {
                             Log.e("Location Tracking (Run)", "Location was NULL");
@@ -184,10 +174,6 @@ public class Trip extends AppCompatActivity {
 
     public static int Interval() {
         return mInterval;
-    }
-
-    public static int AddInterval() {
-        return mAddInterval;
     }
 
     public String GetRecentSpeedData() {

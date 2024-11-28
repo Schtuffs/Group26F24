@@ -1,13 +1,7 @@
 package com.driveapp.driverater;
 
-import android.animation.AnimatorSet;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 
-import com.driveapp.driverater.logic.Trip;
 import com.driveapp.driverater.logic.User;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +11,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.driveapp.driverater.databinding.ActivityMainBinding;
-import com.driveapp.driverater.ui.trip.TripFragment;
 
 public class MainActivity extends AppCompatActivity {
     private static User user;
@@ -44,7 +37,13 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
-    public static int GetScore() {
+    public static void UpdateScore(Double[] score) {
+        if (user != null) {
+            user.AddScore(score);
+        }
+    }
+
+    public static double GetScore() {
         return user.GetScore();
     }
 

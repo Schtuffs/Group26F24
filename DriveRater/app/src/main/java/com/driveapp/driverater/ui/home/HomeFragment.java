@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.driveapp.driverater.Login;
-import com.driveapp.driverater.R;
 import com.driveapp.driverater.databinding.FragmentHomeBinding;
 import com.driveapp.driverater.logic.Trip;
 import com.driveapp.driverater.register;

@@ -3,32 +3,38 @@ package com.driveapp.driverater.logic;
 import java.util.ArrayList;
 
 public class DriveScore {
-    // Holds the actual driver score
-    private int driverScoreValue;
+    private final static double capAcceleration = 2.0, capDeceleration = -2.0;
+    public static Double[] CalculateScore(ArrayList<SpeedStorage> speedData) {
+        // Score starts at 100 and goes down
+        double score = 100.;
 
-    // This is required to adjust the weighting of trips in the future
-    ArrayList<Trip> allTrips;
+        // Store total points of data to change how much each affects the score
+        double weight = 100. / speedData.size();
 
-    public DriveScore() {
-        // User starts with a drive score of 50
-        this.driverScoreValue = 50;
-    }
+        // This allows the value to affect the weighting more or less based on how many points of data it has
+        double totalWeight = speedData.size() / 100.;
+        if (totalWeight > 1) {
+            totalWeight = 1.;
+        }
 
-    // Trip is not implemented at the moment, however its functionality will be needed to calculate
-    // updates for the drivers score
-    // This will update the score based on the newly added trip
-    public void UpdateScore(Trip trip) {
-        // Add trip to the total trip count, lets each successive trip influence the total score less
-        this.allTrips.add(trip);
+        // Score affecting values in percentages, affected by weighting
+        double aboveLimit = 0.85 * weight, fastAcceleration = 0.1 * weight, fastDeceleration = 0.05 * weight;
 
-        // Updates the driver score
-        int scoreUpdate = 0;
-        // Update value with diminishing returns so that all trips are weighted fairly equally
-        // This method of calculating will be changed in the future
-        this.driverScoreValue += scoreUpdate / this.allTrips.size();
-    }
-
-    public int GetScore() {
-        return this.driverScoreValue;
+        // Loop through each set of data
+        for (SpeedStorage speed : speedData) {
+            // Tests if the user was going above the speed limit
+            if (speed.UserSpeed() > speed.SpeedLimit()) {
+                score -= aboveLimit;
+            }
+            // Test if users acceleration is above the threshold for accelerating too fast
+            if (speed.Acceleration() > capAcceleration) {
+                score -= fastAcceleration;
+            }
+            // Test if users deceleration is above the threshold for breaking too hard
+            if (speed.Acceleration() < capDeceleration) {
+                score -= fastDeceleration;
+            }
+        }
+        return new Double[] { totalWeight, score };
     }
 }
