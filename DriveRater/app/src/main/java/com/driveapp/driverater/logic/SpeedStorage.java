@@ -9,21 +9,14 @@ public class SpeedStorage {
     private final double minSpeed = 1., minAcceleration = 1.;
 
     // Both stored in KM/H
-    private int mSpeedLimit;
+    private final int mSpeedLimit;
     private double mUserSpeed, mAcceleration;
-
-    // Stores location for now, just in case
-    private Location mLocation;
-
     public SpeedStorage(Location loc, SpeedStorage previous) {
-        this.mLocation = loc;
-
-        // Return if the location does not have a speed
+        // Create empty object if location does not have speed data
         if (!loc.hasSpeed()) {
             this.mUserSpeed = 0;
             this.mAcceleration = 0;
             this.mSpeedLimit = 0;
-            this.mLocation = loc;
             return;
         }
         // Adding the user speed
@@ -39,15 +32,14 @@ public class SpeedStorage {
         // Convert to KM/H
         userSpeed *= 3.6;
 
-        // Speed limit
-        // Still searching for a library
-        int limitSpeed = 0;
+        // Speed limit, currently always 50
+        int limitSpeed = 50;
 
         // Calculating acceleration
         if (previous != null) {
             try {
-                this.mAcceleration = (userSpeed - previous.mUserSpeed) / Trip.AddInterval();
-                Log.v("Constructor", "Prev: " + previous.mUserSpeed + ", Current: " + userSpeed + ", Accel: " + this.mAcceleration);
+                // Convert to seconds
+                this.mAcceleration = (userSpeed - previous.mUserSpeed) / Trip.Interval() / 1000;
             } catch (ArithmeticException e) {
                 Log.d("SpeedStorageConstructor", "SpeedStorage: Cannot divide by 0");
                 this.mAcceleration = 0;
@@ -67,17 +59,14 @@ public class SpeedStorage {
     }
 
     public double UserSpeed() {
-        // Downcast to int for display purposes
         return this.mUserSpeed;
     }
 
     public double SpeedLimit() {
-        // Downcast to int for display purposes
         return this.mSpeedLimit;
     }
 
     public double Acceleration() {
-        // Downcast to int for display purposes
         return this.mAcceleration;
     }
 }

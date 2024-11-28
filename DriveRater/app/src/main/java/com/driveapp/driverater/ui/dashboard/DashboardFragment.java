@@ -27,7 +27,7 @@ public class DashboardFragment extends Fragment {
 
         // Set score
         MutableLiveData<String> score = new MutableLiveData<>();
-        score.setValue(Integer.toString(MainActivity.GetScore()));
+        score.setValue(Integer.toString((int)MainActivity.GetScore()));
         score.observe(getViewLifecycleOwner(), textScore::setText);
 
         // Set name
