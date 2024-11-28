@@ -6,23 +6,21 @@ public class User {
     private double mDriveScore;
     private double mPrevTripScore;
 
+    private ArrayList<SpeedStorage> mPrevTripData;
+
     private ArrayList<Double[]> mDriveScores;
-    private String firstName, lastName;
-    public User(String first, String last) {
+    private String firstName;
+    public User(String first, double score) {
         this.firstName = first;
-        this.lastName = last;
-        this.mDriveScore = 50.;
+        this.mDriveScore = score;
         this.mDriveScores = new ArrayList<>();
         this.mDriveScores.add(new Double[] {1., this.mDriveScore} );
         this.mPrevTripScore = 0;
+        this.mPrevTripData = new ArrayList<>();
     }
 
     public String GetFirst() {
         return this.firstName;
-    }
-
-    public String GetLast() {
-        return this.lastName;
     }
 
     public double GetScore() {
@@ -33,7 +31,17 @@ public class User {
         return this.mPrevTripScore;
     }
 
-    public void AddScore(Double[] newScore) {
+    public ArrayList<SpeedStorage> GetPreviousTripData() {
+        return this.mPrevTripData;
+    }
+
+    public void AddTrip(ArrayList<SpeedStorage> speedData) {
+        this.mPrevTripData = speedData;
+        Double[] calculatedScoreAdjustment = DriveScore.CalculateScore(this.mPrevTripData);
+        this.AddScore(calculatedScoreAdjustment);
+    }
+
+    private void AddScore(Double[] newScore) {
         // Don't add weightless scores
         if (newScore[0] <= 0.) {
             return;

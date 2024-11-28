@@ -85,8 +85,7 @@ public class Trip extends AppCompatActivity {
         Button returnButton = findViewById(R.id.tripHomeButton);
         returnButton.setOnClickListener(v -> {
             this.mHandler.removeCallbacks(this.mDriveDataGetter);
-            Double[] calculatedScoreAdjustment = DriveScore.CalculateScore(this.speedsAndLimits);
-            MainActivity.UpdateScore(calculatedScoreAdjustment);
+            MainActivity.UpdateUserTrips(this.speedsAndLimits);
             this.finish();
         });
 
