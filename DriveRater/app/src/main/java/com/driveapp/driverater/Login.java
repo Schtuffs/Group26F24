@@ -52,9 +52,10 @@ public class Login extends AppCompatActivity {
                 DatabaseHelper db = new DatabaseHelper(Login.this);
 
                 //Check that the username and password exist within the system
-                boolean check = db.checkLoginData(username, password);
+                String check = db.checkLoginData(user, password);
 
-                if (check) {
+                if (check != null) {
+                    MainActivity.SetUser(check);
                     // Successful login
                     Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
                 } else {

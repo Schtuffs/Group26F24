@@ -21,9 +21,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Create the user
-        user = new User("NameFirst", "NameLast");
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -37,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
+    public static void SetUser(String name) {
+        user = new User(name, "");
+    }
+
     public static void UpdateScore(Double[] score) {
         if (user != null) {
             user.AddScore(score);
@@ -44,10 +45,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static double GetScore() {
-        return user.GetScore();
+        if (user != null)
+            return user.GetScore();
+        return 0;
     }
 
     public static String GetFirstname() {
-        return user.GetFirst();
+        if (user != null) {
+            return user.GetFirst();
+        }
+        return "No Name";
     }
 }
