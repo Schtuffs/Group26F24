@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class register extends AppCompatActivity {
 
     //Variables needed to track the text in any entry fields, as well as the registry button itself
-    private EditText editTextUsername, editTextPassword;
+    private EditText editTextPreferredName, editTextUsername, editTextPassword;
     private Button buttonRegister;
 
     @Override
@@ -34,7 +34,8 @@ public class register extends AppCompatActivity {
         });
 
         // Initialize UI elements
-        editTextUsername = findViewById(R.id.editTextUsername);
+        editTextPreferredName = findViewById(R.id.editTextFirstName);
+        editTextUsername = findViewById(R.id.editTextUsername2);
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonRegister = findViewById(R.id.buttonRegister);
 
@@ -42,6 +43,7 @@ public class register extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Retrieve entered username and password (trimming username spaces on both ends)
+                String preferredName = editTextPreferredName.getText().toString();
                 String user = editTextUsername.getText().toString();
                 String username = user.trim();
                 String password = editTextPassword.getText().toString();
@@ -72,7 +74,7 @@ public class register extends AppCompatActivity {
                         throw e;
                     }
 
-                    userModel = new UserModel(-1, username, password);
+                    userModel = new UserModel(-1, preferredName, username, password);
                 }
 
                 //If exception thrown, do NOT add info to database

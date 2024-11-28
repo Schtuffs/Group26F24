@@ -15,6 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Declare static variables, including the table, and columns in use for user storage
     public static final String USER_TABLE = "USER_TABLE";
+    public static final String COLUMN_PREFNAME = "PreferredName";
     public static final String COLUMN_USERNAME = "Username";
     public static final String COLUMN_PASSWORD = "Password";
 
@@ -26,7 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //First time accessing the database object
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableStatement = "CREATE TABLE " + USER_TABLE + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT)";
+        String createTableStatement = "CREATE TABLE " + USER_TABLE + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_PREFNAME + " TEXT)";
         db.execSQL(createTableStatement);
     }
 
@@ -44,6 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         //Content values is a hashmap that allows associative pairing of data, perfect for databases
         ContentValues uv = new ContentValues();
+        uv.put(COLUMN_PREFNAME, userModel.getPreferredName());
         uv.put(COLUMN_USERNAME, userModel.getUsername());//Put the username from passed userModel into a column
         uv.put(COLUMN_PASSWORD, userModel.getPassword());//Put the password from passed userModel into a column
 
@@ -53,7 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Check for valid login info using a provided username and password
-    public boolean checkLoginData (String username, String password){
+    public String checkLoginData (String username, String password){
 
         //Declare a query, selecting all data from the existing database
         String queryString = "SELECT * FROM " + USER_TABLE;
@@ -72,6 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 //Here is where code would go for the checking of the user ID, which starts at the first column (0) and is not needed at the moment
                 String currentUser = cursor.getString(1);//Get the username of the current index (specified by the second column)
                 String currentPass = cursor.getString(2);//Get the password of the current index (specified by the third column)
+                String currentName = cursor.getString(3);
 
                 //If the current indexed username matches the login username
                 if (Objects.equals(currentUser, username)){
@@ -81,15 +84,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                         cursor.close();//Close the cursor for memory safety
 
-                        return true;//return true, indicating that the provided login information is valid
+
+                        return currentName;//return users preferred name
                     }
                 }
             }while(cursor.moveToNext());//Continue across the database, until there are no longer any next indexes
 
             cursor.close();//Close the cursor for memory safety
         }
-        //Return false if the database is empty
-        return false;
+        //Return null if the database is empty
+        return null;
     }
 
     //Check for existing usernames, preventing duplicates
