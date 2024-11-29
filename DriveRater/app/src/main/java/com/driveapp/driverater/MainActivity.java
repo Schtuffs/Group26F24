@@ -2,6 +2,7 @@ package com.driveapp.driverater;
 
 import android.os.Bundle;
 
+import com.driveapp.driverater.logic.SpeedStorage;
 import com.driveapp.driverater.logic.User;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.driveapp.driverater.databinding.ActivityMainBinding;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static User user;
@@ -27,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_previous_trip)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -35,12 +38,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void SetUser(String name) {
-        user = new User(name, "");
+        user = new User(name, 50.);
     }
 
-    public static void UpdateScore(Double[] score) {
+    public static void UpdateUserTrips(ArrayList<SpeedStorage> speeds) {
         if (user != null) {
-            user.AddScore(score);
+            user.AddTrip(speeds);
         }
     }
 
@@ -48,6 +51,20 @@ public class MainActivity extends AppCompatActivity {
         if (user != null)
             return user.GetScore();
         return 0;
+    }
+
+    public static double GetPrevTripScore() {
+        if (user != null) {
+            return user.GetPrevTripScore();
+        }
+        return -1;
+    }
+
+    public static ArrayList<SpeedStorage> GetPrevTripData() {
+        if (user != null) {
+            return user.GetPreviousTripData();
+        }
+        return null;
     }
 
     public static String GetFirstname() {
