@@ -6,7 +6,7 @@ import android.util.Log;
 // For storing the speed limit and the users speed
 public class SpeedStorage {
     // Stores minimum allowed speed/acceleration before defaulting to 0
-    private final double minSpeed = 1.0, minAcceleration = 0.1;
+    private final double minSpeed = 0.5;
 
     // Both stored in KM/H
     private final int mSpeedLimit;
