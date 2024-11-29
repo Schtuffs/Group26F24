@@ -23,16 +23,6 @@ public class SpeedStorage {
         // Adding the user speed
         double userSpeed = loc.getSpeed();
 
-        // Check if the location is confident with the accuracy of the speed
-        if (loc.hasSpeedAccuracy()) {
-            // If the speed is lower than 1 m/s, then they are most likely not moving
-            if (userSpeed < this.minSpeed) {
-                userSpeed = 0;
-            }
-        }
-        else {
-            userSpeed = 0;
-        }
         // Convert to KM/H
         userSpeed *= 3.6;
 
@@ -46,10 +36,6 @@ public class SpeedStorage {
                 this.mAcceleration = (userSpeed - previous.mUserSpeed) / (Trip.Interval() / 1000.0);
             } catch (ArithmeticException e) {
                 Log.d("SpeedStorageConstructor", "SpeedStorage: Cannot divide by 0");
-                this.mAcceleration = 0;
-            }
-            // Default the min acceleration if too slow
-            if (this.mAcceleration < this.minAcceleration) {
                 this.mAcceleration = 0;
             }
         }
