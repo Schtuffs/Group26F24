@@ -7,6 +7,19 @@
     tools:context=".ui.PreviousTrip.PreviousTripFragment">
 
 <!--    Previous trip Score Text Field   -->
+    <ImageView
+        android:id="@+id/bgGradient9"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/background"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/textPreviousTripScore"
         android:layout_width="match_parent"
@@ -14,8 +27,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:fontFamily="sans-serif-condensed"
         android:textAlignment="center"
-        android:textSize="50sp"
+        android:textColor="#424C93"
+        android:textSize="96sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -31,9 +47,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="30sp"
         android:text="@string/label_previous_score"
+        android:textAlignment="center"
+        android:textColor="#434d94"
+        android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -42,6 +60,8 @@
         app:layout_constraintVertical_bias="0.2" />
 
 <!--    Text field containing speed limit infractions   -->
+
+    <!--    Text field containing fast accelerations   -->
     <TextView
         android:id="@+id/textOverSpeed"
         android:layout_width="match_parent"
@@ -49,33 +69,18 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:alpha=".75"
         android:textAlignment="center"
+        android:textColor="#424C93"
         android:textSize="20sp"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.419" />
 
-    <!--    Text field containing fast accelerations   -->
-    <TextView
-        android:id="@+id/textFastAccelerate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.45" />
-
-    <!--    Text field containing fast decelerations   -->
     <TextView
         android:id="@+id/textFastDecelerate"
         android:layout_width="match_parent"
@@ -83,12 +88,36 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:alpha=".75"
         android:textAlignment="center"
+        android:textColor="#424C93"
         android:textSize="20sp"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.519" />
+
+    <TextView
+        android:id="@+id/textFastAccelerate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:alpha=".75"
+        android:textAlignment="center"
+        android:textColor="#424C93"
+        android:textSize="20sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.469" />
+
+    <!--    Text field containing fast decelerations   -->
 </androidx.constraintlayout.widget.ConstraintLayout>
