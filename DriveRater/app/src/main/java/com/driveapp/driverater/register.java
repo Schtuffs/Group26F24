@@ -16,7 +16,6 @@ public class register extends AppCompatActivity {
 
     //Variables needed to track the text in any entry fields, as well as the registry button itself
     private EditText editTextPreferredName, editTextUsername, editTextPassword;
-    private Button buttonRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +36,7 @@ public class register extends AppCompatActivity {
         editTextPreferredName = findViewById(R.id.editTextFirstName);
         editTextUsername = findViewById(R.id.editTextUsername2);
         editTextPassword = findViewById(R.id.editTextPassword);
-        buttonRegister = findViewById(R.id.buttonRegister);
+        Button buttonRegister = findViewById(R.id.buttonRegister);
 
         buttonRegister.setOnClickListener(new View.OnClickListener() {//When registry button is clicked
             @Override
@@ -47,6 +46,8 @@ public class register extends AppCompatActivity {
                 String user = editTextUsername.getText().toString();
                 String username = user.trim();
                 String password = editTextPassword.getText().toString();
+                String driveScore = "50";
+                String driveWeight = "1";
 
                 //Declare a userModel class (used for the database)
                 UserModel userModel;
@@ -74,7 +75,7 @@ public class register extends AppCompatActivity {
                         throw e;
                     }
 
-                    userModel = new UserModel(-1, preferredName, username, password);
+                    userModel = new UserModel(-1, preferredName, username, password, driveScore, driveWeight);
                 }
 
                 //If exception thrown, do NOT add info to database
