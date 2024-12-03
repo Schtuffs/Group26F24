@@ -8,6 +8,8 @@ public class User {
 
     private ArrayList<SpeedStorage> mPrevTripData;
 
+    private final int DRIVE_WEIGHT = 0, DRIVE_SCORE = 1;
+
     private ArrayList<Double[]> mDriveScores;
     private String firstName;
     public User(String first, double score) {
@@ -43,13 +45,13 @@ public class User {
 
     private void AddScore(Double[] newScore) {
         // Don't add weightless scores
-        if (newScore[0] <= 0.) {
+        if (newScore[DRIVE_WEIGHT] <= 0.) {
             return;
         }
 
-        if (0 <= newScore[1] && newScore[1] <= 100) {
+        if (0 <= newScore[DRIVE_SCORE] && newScore[DRIVE_SCORE] <= 100) {
             // Change previous trip score to the new trip score
-            this.mPrevTripScore = newScore[1];
+            this.mPrevTripScore = newScore[DRIVE_SCORE];
 
             // Add score to list of scores
             this.mDriveScores.add(newScore);
@@ -58,9 +60,9 @@ public class User {
             // Loop through all scores to calculate average
             for (Double[] score : this.mDriveScores) {
                 // Add weight to variable to divide score later
-                totalWeight += score[0];
+                totalWeight += score[DRIVE_WEIGHT];
                 // Adjust score based on its weight
-                totalScore += score[1] * score[0];
+                totalScore += score[DRIVE_SCORE] * score[DRIVE_WEIGHT];
             }
             // Set score to the score / extra weight values
             this.mDriveScore = totalScore / totalWeight;
