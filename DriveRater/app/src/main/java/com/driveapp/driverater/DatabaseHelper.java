@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import com.driveapp.driverater.logic.User;
+
 import java.util.Objects;
 
 //Class that provides functions that operate on a database
@@ -18,6 +20,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PREFNAME = "PreferredName";
     public static final String COLUMN_USERNAME = "Username";
     public static final String COLUMN_PASSWORD = "Password";
+    public static final String COLUMN_DRIVESCORE = "DriveScore";
+    public static final String COLUMN_SCOREWEIGHT = "Weight";
 
     //Constructor for the DatabaseHelper class (Nullable dictates that there can be no context upon initialization
     public DatabaseHelper(@Nullable Context context) {
@@ -48,6 +52,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         uv.put(COLUMN_PREFNAME, userModel.getPreferredName());
         uv.put(COLUMN_USERNAME, userModel.getUsername());//Put the username from passed userModel into a column
         uv.put(COLUMN_PASSWORD, userModel.getPassword());//Put the password from passed userModel into a column
+        uv.put(COLUMN_DRIVESCORE, userModel.getDriveScore());//Put the driver score from passes userModel into a column
+        uv.put(COLUMN_SCOREWEIGHT, userModel.getScoreWeight());//Put the scoring weight from passes userModel into a column
 
         //Putting NULL value as the "column hack", as the program should not allow adding empty data to the database
         long insert = db.insert(USER_TABLE, null, uv);
@@ -95,7 +101,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Return null if the database is empty
         return null;
     }
+    public boolean updateUserScore (User user){
 
+        //SQLITE function allows writing to the database
+        SQLiteDatabase db = this.getWritableDatabase();//Opening in writable (because we need to write here)
+
+        //Content values is a hashmap that allows associative pairing of data, perfect for databases
+        ContentValues uv = new ContentValues();
+
+
+        try{
+            uv.put(COLUMN_DRIVESCORE, user.GetScore());//Update the score
+            db.update(USER_TABLE, uv, COLUMN_DRIVESCORE + " = " + user.GetFirst(), null);//Update the score where firstName matches passed
+            return true;
+        }
+
+        catch (Exception e){
+            return false;
+        }
+    }
     //Check for existing usernames, preventing duplicates
     public boolean checkForExistingUser (String username) {
 
