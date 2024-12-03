@@ -46,8 +46,8 @@ public class register extends AppCompatActivity {
                 String user = editTextUsername.getText().toString();
                 String username = user.trim();
                 String password = editTextPassword.getText().toString();
-                String driveScore = "50";
-                String driveWeight = "1";
+                double driveScore = 50.;
+                double driveWeight = 1.;
 
                 //Declare a userModel class (used for the database)
                 UserModel userModel;

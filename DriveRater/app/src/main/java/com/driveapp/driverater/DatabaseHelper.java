@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import com.driveapp.driverater.logic.User;
-
 import java.util.Objects;
 
 //Class that provides functions that operate on a database
@@ -31,7 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //First time accessing the database object
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableStatement = "CREATE TABLE " + USER_TABLE + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_PREFNAME + " TEXT)";
+        String createTableStatement = "CREATE TABLE " + USER_TABLE + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_PREFNAME + " TEXT, " + COLUMN_DRIVESCORE + " DOUBLE, " + COLUMN_SCOREWEIGHT + " DOUBLE)";
         db.execSQL(createTableStatement);
     }
 
@@ -61,7 +59,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Check for valid login info using a provided username and password
-    public String checkLoginData (String username, String password){
+    public UserModel checkLoginData (String username, String password){
 
         //Declare a query, selecting all data from the existing database
         String queryString = "SELECT * FROM " + USER_TABLE;
@@ -88,10 +86,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     //If the current indexed password also matches the login password
                     if (Objects.equals(currentPass, password)) {
 
+                        UserModel user = new UserModel(cursor.getInt(0), currentName, currentUser, currentPass, cursor.getDouble(4), cursor.getDouble(5));
                         cursor.close();//Close the cursor for memory safety
 
-
-                        return currentName;//return users preferred name
+                        return user;//return users preferred name
                     }
                 }
             }while(cursor.moveToNext());//Continue across the database, until there are no longer any next indexes
@@ -101,7 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Return null if the database is empty
         return null;
     }
-    public boolean updateUserScore (User user){
+    public boolean updateUserScore (UserModel user){
 
         //SQLITE function allows writing to the database
         SQLiteDatabase db = this.getWritableDatabase();//Opening in writable (because we need to write here)
@@ -112,7 +110,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try{
             uv.put(COLUMN_DRIVESCORE, user.GetScore());//Update the score
-            db.update(USER_TABLE, uv, COLUMN_DRIVESCORE + " = " + user.GetFirst(), null);//Update the score where firstName matches passed
+            uv.put(COLUMN_SCOREWEIGHT, user.getScoreWeight());//Update the weight
+            db.update(USER_TABLE, uv, "ID = " + user.getId(), null);//Update the score where firstName matches passed
             return true;
         }
 
