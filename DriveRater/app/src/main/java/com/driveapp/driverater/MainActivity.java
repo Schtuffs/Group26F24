@@ -3,7 +3,6 @@ package com.driveapp.driverater;
 import android.os.Bundle;
 
 import com.driveapp.driverater.logic.SpeedStorage;
-import com.driveapp.driverater.logic.User;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -17,7 +16,7 @@ import com.driveapp.driverater.databinding.ActivityMainBinding;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private static User user;
+    private static UserModel user;
 
     private ActivityMainBinding binding;
 
@@ -40,8 +39,12 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
-    public static void SetUser(String name) {
-        user = new User(name, 50.);
+    public static void SetUser(UserModel um) {
+        user = um;
+    }
+
+    public static UserModel GetUser() {
+        return user;
     }
 
     public static void UpdateUserTrips(ArrayList<SpeedStorage> speeds) {
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static String GetFirstname() {
         if (user != null) {
-            return user.GetFirst();
+            return user.getPreferredName();
         }
         return "No Name";
     }

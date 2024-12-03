@@ -1,5 +1,10 @@
 package com.driveapp.driverater;
 
+import com.driveapp.driverater.logic.DriveScore;
+import com.driveapp.driverater.logic.SpeedStorage;
+
+import java.util.ArrayList;
+
 //UserModel class that is input into a database
 public class UserModel {
 
@@ -8,21 +13,23 @@ public class UserModel {
     private String preferredName;
     private String username;
     private String password;
-    private String driveScore;
-    private String scoreWeight;
+    private double mDriveScore;
+    private double mPrevTripScore;
+    private ArrayList<SpeedStorage> mPrevTripData;
+    private final int DRIVE_WEIGHT = 0, DRIVE_SCORE = 1;
+    private ArrayList<Double[]> mDriveScores;
 
     //Constructors
-    public UserModel(int id, String prefName, String username, String password, String driveScore, String scoreWeight) {//Parameterized constructor, given an id, username, and password
+    public UserModel(int id, String prefName, String username, String password, double driveScore, double scoreWeight) {//Parameterized constructor
         this.id = id;
         this.preferredName = prefName;
         this.username = username;
         this.password = password;
-        this.driveScore = driveScore;
-        this.scoreWeight = scoreWeight;
-
-    }
-    public UserModel() {//Default constructor
-
+        this.mDriveScore = driveScore;
+        this.mDriveScores = new ArrayList<>();
+        this.mDriveScores.add(new Double[] {scoreWeight, this.mDriveScore} );
+        this.mPrevTripScore = 0;
+        this.mPrevTripData = new ArrayList<>();
     }
 
     //Return the id
@@ -46,14 +53,15 @@ public class UserModel {
     }
 
     //Get the driver score
-    public String getDriveScore(){return this.driveScore;}
+    public double getDriveScore() { return this.mDriveScore; }
 
     //Get the score weighting
-    public String getScoreWeight(){return this.scoreWeight;}
-
-    //Set the username
-    public void setUsername(String username) {
-        this.username = username;
+    public double getScoreWeight() {
+        double weight = 0;
+        for (Double[] values : this.mDriveScores) {
+            weight += values[DRIVE_WEIGHT];
+        }
+        return weight;
     }
 
     //Get the password
@@ -61,15 +69,56 @@ public class UserModel {
         return password;
     }
 
-    //Set the password
-    public void setPassword(String password) {
-        this.password = password;
+    public double GetScore() {
+        // Recalculate score
+        this.CalculateScore();
+        return this.mDriveScore;
     }
 
-    //Get the driver score
-    public void setDriveScore(String driveScore){this.driveScore = driveScore;}
+    public double GetPrevTripScore() {
+        return this.mPrevTripScore;
+    }
 
-    //Get the score weighting
-    public void setScoreWeight(String scoreWeight){this.scoreWeight = scoreWeight;}
+    public ArrayList<SpeedStorage> GetPreviousTripData() {
+        return this.mPrevTripData;
+    }
+
+    public void AddTrip(ArrayList<SpeedStorage> speedData) {
+        this.mPrevTripData = speedData;
+        Double[] calculatedScoreAdjustment = DriveScore.CalculateScore(this.mPrevTripData);
+        this.AddScore(calculatedScoreAdjustment);
+    }
+
+    private void AddScore(Double[] newScore) {
+        // Don't add weightless scores
+        if (newScore[DRIVE_WEIGHT] <= 0.) {
+            return;
+        }
+
+        if (0 <= newScore[DRIVE_SCORE] && newScore[DRIVE_SCORE] <= 100) {
+            // Change previous trip score to the new trip score
+            this.mPrevTripScore = newScore[DRIVE_SCORE];
+
+            // Add score to list of scores
+            this.mDriveScores.add(newScore);
+
+            this.CalculateScore();
+        }
+    }
+
+    private void CalculateScore() {
+        double totalScore = 0, totalWeight = 0;
+
+        // Loop through all scores to calculate average
+        for (Double[] score : this.mDriveScores) {
+            // Add weight to variable to divide score later
+            totalWeight += score[DRIVE_WEIGHT];
+            // Adjust score based on its weight
+            totalScore += score[DRIVE_SCORE] * score[DRIVE_WEIGHT];
+        }
+        // Set score to the score / extra weight values
+        this.mDriveScore = totalScore / totalWeight;
+    }
+
 }
 

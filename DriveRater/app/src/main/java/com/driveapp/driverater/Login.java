@@ -52,7 +52,7 @@ public class Login extends AppCompatActivity {
                 DatabaseHelper db = new DatabaseHelper(Login.this);
 
                 //Check that the username and password exist within the system
-                String check = db.checkLoginData(user, password);
+                UserModel check = db.checkLoginData(user, password);
 
                 if (check != null) {
                     MainActivity.SetUser(check);

@@ -16,8 +16,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.driveapp.driverater.DatabaseHelper;
 import com.driveapp.driverater.MainActivity;
 import com.driveapp.driverater.R;
+import com.driveapp.driverater.UserModel;
 import com.driveapp.driverater.databinding.FragmentTripBinding;
 import com.driveapp.driverater.ui.trip.TripFragment;
 import com.google.android.gms.location.CurrentLocationRequest;
@@ -107,6 +109,16 @@ public class Trip extends AppCompatActivity {
         }
         else {
             this.Run();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        UserModel user = MainActivity.GetUser();
+        if (user != null) {
+            DatabaseHelper databaseHelper = new DatabaseHelper(Trip.this);
+            databaseHelper.updateUserScore(user);
         }
     }
 
