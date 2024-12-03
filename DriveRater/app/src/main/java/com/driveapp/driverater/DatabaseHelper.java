@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import com.driveapp.driverater.logic.User;
-
 import java.util.Objects;
 
 //Class that provides functions that operate on a database
